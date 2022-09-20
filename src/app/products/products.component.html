@@ -1,0 +1,62 @@
+<div class="container">
+    <nav *ngIf="authService.hasRole('admin')" class="m-2 p-2 border border-dark">
+        <button  class="btn btn btn-outline-dark" (click)="handleNewProduct()">New Product</button>
+    </nav>
+    <ng-template #errors>
+        <div class="text-danger">{{errorMessage}}</div>  
+    </ng-template>
+    <div class="card" *ngIf="products; else errors">
+        <div class="card-header">products list</div>
+        <div class="card-body">
+            <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchProducts()">
+                <div class="input-group">
+                    <label class="input-group-text">Keyword:</label>
+                    <input type="text" class="form-control" formControlName="keyword">
+                    <button class="btn btn-info">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Product</th><th>Price</th><th>Promotion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of products">
+                        <td>{{p.id}}</td>
+                        <td>{{p.name}}</td>
+                        <td>{{p.price}}</td>
+                        <td>
+                                <i *ngIf="p.promotion==true" class="bi bi-check-circle text-success"></i>                        
+                        </td>
+                        <td *ngIf="authService.hasRole('admin')">
+                            <button (click)="handleSetPromotion(p)" [ngClass]="p.promotion==true?'btn-danger':'btn-success'" class="btn btn-success">
+                                <span *ngIf="p.promotion==true"> Promo Off</span> 
+                                <span *ngIf="p.promotion==false"> Promo On</span> 
+                            </button>
+                        </td>
+                        <td *ngIf="authService.hasRole('admin')">
+                            <button (click)="handleDeleteProduct(p)" class="btn btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>                       
+                        <td *ngIf="authService.hasRole('admin')">
+                            <button (click)="handleEditProduct(p)" class="btn btn-info">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <ul class="nav nav-pills">
+                <!-- [].constructor(this.totalPages)  
+                    construire un tableau de pages à l'aide du constructeur-->
+                <li *ngFor="let item of [].constructor(this.totalPages); let i=index">
+                    <a (click)="gotoPage(i)" [ngClass]="i==currentPage? 'btn-primary': 'btn-outline-primary'"  class="btn ms-1 mt-1">{{i}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
